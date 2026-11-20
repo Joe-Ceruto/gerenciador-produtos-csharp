@@ -208,14 +208,25 @@ public class Program
             Console.WriteLine("\n Nothing was founded!");
             return;
         }
+
+        string linha = new string('-', 62);
+
+        Console.WriteLine();
+        Console.WriteLine(linha);
+        Console.WriteLine("{0,-8}{1,-26}{2,12}{3,16}", "Código", "Produto", "Quantidade", "Preço");
+        Console.WriteLine(linha);
+
         foreach (Produto produto in produtos)
         {
-            Console.WriteLine($"\nCódigo: {produto.code}");
-            Console.WriteLine($"\nProduto: {produto.name}");
-            Console.WriteLine($"\nQuantidade: {produto.amount}");
-            Console.WriteLine($"\nPreço: {produto.price:C2}");
-            Console.WriteLine($"-----------------------------------------------------------------------");
+            string nome = produto.name.Length > 24
+            ? produto.name.Substring(0, 21) + "..."
+            : produto.name;
+
+            Console.WriteLine($"{produto.code,-8}{nome,-26}{produto.amount,12}{produto.price,16:C2}");
         }
+
+        Console.WriteLine(linha);
+        Console.WriteLine($"Total de produtos: {produtos.Count}");
     }
 
     static void Update(int id, string? inputName, string? inputAmount, string? inputPrice)
