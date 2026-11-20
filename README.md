@@ -116,5 +116,5 @@ Criar testes automatizados
 
 Autor
 
-JoeCeruto — GitHub
+JoeCeruto — GitHub https://github.com/Joe-Ceruto/
 
