@@ -31,8 +31,8 @@ Como executar
 Pré-requisito: ter o SDK do .NET instalado.
 
 ```bash
-git clone <url-do-repositorio>
-cd <pasta-do-projeto>
+git clone https://github.com/Joe-Ceruto/gerenciador-produtos-csharp.git
+cd gerenciador-produtos-csharp
 dotnet run
 ```
 
