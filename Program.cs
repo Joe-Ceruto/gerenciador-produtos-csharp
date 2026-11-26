@@ -12,64 +12,53 @@ public class Program
         while (isRunning)
         {
             Console.WriteLine("\nWelcome to the management software!");
-            Console.WriteLine("\n 1- Create a product. \n 2- Consult the products. \n 3- Edit a product. \n 4- Delete a product. \n 5- Exit.");
-            var input = Console.ReadLine();
-            if (int.TryParse(input, out int result))
+            Console.WriteLine("");
+            var input = validationInt("\n 1- Create a product. \n 2- Consult the products. \n 3- Edit a product. \n 4- Delete a product. \n 5- Exit.");
+            switch (input)
             {
-                switch (result)
-                {
-                    case 1:
-                        Create();
-                        break;
-                    case 2:
-                        Read();
-                        break;
-                    case 3:
-                        Console.WriteLine("Type the product code you want edit :");
-                        string? inputCode = Console.ReadLine();
-                        int codeUpdate = validateId(inputCode);
-                        if (codeUpdate > 0)
-                        {
-                            Console.WriteLine("Type the new name:");
-                            string? inputName = Console.ReadLine();
+                case 1:
+                    Create();
+                    break;
+                case 2:
+                    Read();
+                    break;
+                case 3:
+                    int codeUpdate = validationInt("Type the product code you want edit :");
+                    if (codeUpdate > 0)
+                    {
+                        Console.WriteLine("Type the new name:");
+                        string? inputName = Console.ReadLine();
 
-                            Console.WriteLine("Type the new amount:");
-                            string? inputAmount = Console.ReadLine();
+                        Console.WriteLine("Type the new amount:");
+                        string? inputAmount = Console.ReadLine();
 
-                            Console.WriteLine("Type the new price:");
-                            string? inputPrice = Console.ReadLine();
+                        Console.WriteLine("Type the new price:");
+                        string? inputPrice = Console.ReadLine();
 
-                            Update(codeUpdate, inputName, inputAmount, inputPrice);
-                            break;
-                        }
-                        Console.WriteLine("This code dont exist:");
+                        Update(codeUpdate, inputName, inputAmount, inputPrice);
                         break;
+                    }
+                    Console.WriteLine("This code dont exist:");
+                    break;
 
-                    case 4:
-                        Console.WriteLine("Type the code you want delete :");
-                        string? inputCodeDelete = Console.ReadLine();
-                        int codeDelete = validateId(inputCodeDelete);
-                        if (codeDelete > 0)
-                        {
-                            Delete(codeDelete);
-                            break;
-                        }
-                        Console.WriteLine("This code dont exist:");
+                case 4:
+                    int codeDelete = validateId();
+                    if (codeDelete > 0)
+                    {
+                        Delete(codeDelete);
                         break;
+                    }
+                    Console.WriteLine("This code dont exist:");
+                    break;
 
-                    case 5:
-                        Console.WriteLine("Closing aplication ....");
-                        isRunning = false;
-                        break;
-                    default:
-                        Console.WriteLine("Invalid option!");
-                        break;
+                case 5:
+                    Console.WriteLine("Closing aplication ....");
+                    isRunning = false;
+                    break;
+                default:
+                    Console.WriteLine("Invalid option!");
+                    break;
 
-                }
-            }
-            else
-            {
-                Console.WriteLine("\n ❌ Error! Type a number, not a text ❌");
             }
         }
     }
@@ -96,13 +85,9 @@ public class Program
         }
         return idCounterGlobal;
     }
-    public static int validateId(string? inputCode)
+    public static int validateId()
     {
-        if (!int.TryParse(inputCode, out int validatedCode))
-        {
-            Console.WriteLine("\n ❌ Type a valid code! ❌ ");
-            return 0;
-        }
+        int validatedCode = validationInt("Type the code you want delete :");
         var product = produtos.Find(x => x.code == validatedCode);
         if (product == null)
         {
@@ -159,46 +144,93 @@ public class Program
         File.WriteAllText("savedProducts.json", jsonString);
     }
 
+    static string validationString(string? message)
+    {
+        while (true)
+        {
+            Console.WriteLine(message);
+            string? text = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                return text;
+            }
+            Console.WriteLine("\n ❌ Campo obrigatório! Tente novamente! ❌ ");
+        }
+    }
+
+    static int validationInt(string? message)
+    {
+        while (true)
+        {
+            Console.WriteLine(message);
+            string? text = Console.ReadLine();
+            if (int.TryParse(text, out int number))
+            {
+                if (number >= 0)
+                    {
+                        return number;
+                    }
+            }
+            Console.WriteLine("\n ❌ Campo inválido! Tente novamente ❌ ");
+        }
+    }
+
+    static decimal validationDecimal(string? message)
+    {
+        while (true)
+        {
+            Console.WriteLine(message);
+            string? text = Console.ReadLine();
+
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                string textPrice = text.Replace('.', ',');
+
+                if (decimal.TryParse(textPrice, out decimal number))
+                {
+                    if (number >= 0)
+                    {
+                        return number;
+                    }
+                    Console.WriteLine("\n ❌ Type a non negative number! ❌ ");
+                }
+            }
+            Console.WriteLine("\n ❌ Campo obrigatório! Tente novamente ❌ ");
+        }
+    }
+
+
 
     static void Create()
     {
         //Getters
-        Console.WriteLine("Type the product name!");
-        string? inputName = Console.ReadLine();
+        string name = validationString("Type the product name");
 
-        Console.WriteLine("Type the amount of the product!");
-        string? inputAmount = Console.ReadLine();
+        int amount = validationInt("Type the amount of the product!");
 
-        Console.WriteLine("Type the product price!");
-        string? inputPrice = Console.ReadLine();
+        decimal price = validationDecimal("Type the product price!");
 
-        if (validateString(inputName) && validateString(inputAmount) && validateString(inputPrice))
+        if (price <= 0)
         {
-            inputPrice = dotToComma(inputPrice);
-            if (int.TryParse(inputAmount, out int amount) && int.Parse(inputAmount) > 0 && double.TryParse(inputPrice, out double price) && double.Parse(inputPrice) > 0)
-            {
-                Produto novoProduto = new Produto // Cria o objeto
-                {
-                    code = searchHighestIdCounter(),
-                    name = inputName,
-                    amount = amount,
-                    price = price
-
-                };
-
-                produtos.Add(novoProduto); // Guarda dentro da lista
-
-                Console.WriteLine($"\nProduto: {novoProduto.name}, \nQuantidade: {novoProduto.amount}, \nPreço: {novoProduto.price:C2}"); // Puxa os dados pelo objeto
-                Console.WriteLine("\n ✅Product created with sucess! ✅");
-
-                saveJson(produtos);
-            }
-            else
-            {
-                Console.WriteLine("\n❌ Error! Type the product amount ou price in the valid way");
-            }
-
+            Console.WriteLine("Digite um número válido!");
         }
+
+        Produto novoProduto = new Produto // Cria o objeto
+        {
+            code = searchHighestIdCounter(),
+            name = name,
+            amount = amount,
+            price = price
+
+        };
+
+        produtos.Add(novoProduto); // Guarda dentro da lista
+
+        Console.WriteLine($"\nProduto: {novoProduto.name}, \nQuantidade: {novoProduto.amount}, \nPreço: {novoProduto.price:C2}"); // Puxa os dados pelo objeto
+        Console.WriteLine("\n ✅Product created with sucess! ✅");
+
+        saveJson(produtos);
+
     }
 
     static void Read()
@@ -262,7 +294,7 @@ public class Program
             {
                 Console.WriteLine("\n✅ The amount wasn't updated! ✅");
             }
-            if (double.TryParse(inputPrice, out double price))
+            if (decimal.TryParse(inputPrice, out decimal price))
             {
                 if (price >= 0)
                 {

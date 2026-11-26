@@ -8,6 +8,6 @@ namespace Products
         public int code { get; init; }
         public string name { get; set; } = "";
         public int amount { get; set; }
-        public double price {get; set;}
+        public decimal price {get; set;}
     }
 }
